@@ -29,7 +29,9 @@ int SysOpen(char* fileName, int type) {
     DEBUG(dbgSys, "\nOpened file");
     return id;
 }
-
+int SysClose(int id) { 
+  return kernel->fileSystem->Close(id); 
+}
 
 void SysPrintNum(int num)
 {

@@ -247,6 +247,14 @@ void ExceptionHandler(ExceptionType which)
 
 			ASSERTNOTREACHED();
 			break;
+		case SC_Close:
+			result = (int)kernel->machine->ReadRegister(4);
+    		kernel->machine->WriteRegister(2, SysClose(result));
+			PCIncrement();
+			return;
+
+			ASSERTNOTREACHED();
+			break;
 		default:
 			cerr << "Unexpected system call " << type << "\n";
 			break;
