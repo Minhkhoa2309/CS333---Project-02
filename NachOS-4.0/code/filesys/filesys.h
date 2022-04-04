@@ -36,20 +36,27 @@
 #include "copyright.h"
 #include "sysdep.h"
 #include "openfile.h"
+#include "filetable.h"
 
 #ifdef FILESYS_STUB 		// Temporarily implement file system calls as 
 				// calls to UNIX, until the real file system
 				// implementation is available
 class FileSystem {
   public:
-    FileSystem() {}
+  	FileTable **fileTable;
+    FileSystem() {
+		fileTable = new FileTable *[10];
+        for (int i = 0; i < 10; i++) {
+            fileTable[i] = new FileTable;
+        }
+	}
 
     bool Create(char *name) {
-	int fileDescriptor = OpenForWrite(name);
+		int fileDescriptor = OpenForWrite(name);
 
-	if (fileDescriptor == -1) return FALSE;
-	Close(fileDescriptor); 
-	return TRUE; 
+		if (fileDescriptor == -1) return FALSE;
+		Close(fileDescriptor); 
+		return TRUE; 
 	}
 
     OpenFile* Open(char *name) {
@@ -58,7 +65,31 @@ class FileSystem {
 	  if (fileDescriptor == -1) return NULL;
 	  return new OpenFile(fileDescriptor);
       }
+	int FileTableIndex();
 
+    void Renew(int id) {
+        for (int i = 0; i < 10; i++) {
+            fileTable[id]->Remove(i);
+        }
+    }
+
+    int Open(char *name, int openMode) {
+        return fileTable[FileTableIndex()]->Insert(name, openMode);
+    }
+
+    int Close(int id) { return fileTable[FileTableIndex()]->Remove(id); }
+
+    int Read(char *buffer, int charCount, int id) {
+        return fileTable[FileTableIndex()]->Read(buffer, charCount, id);
+    }
+
+    int Write(char *buffer, int charCount, int id) {
+        return fileTable[FileTableIndex()]->Write(buffer, charCount, id);
+    }
+
+    int Seek(int position, int id) {
+        return fileTable[FileTableIndex()]->Seek(position, id);
+    }
     bool Remove(char *name) { return Unlink(name) == 0; }
 
 };

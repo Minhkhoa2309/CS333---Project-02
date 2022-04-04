@@ -312,7 +312,12 @@ OpenForWrite(char *name)
     ASSERT(fd >= 0); 
     return fd;
 }
+int OpenForRead(char *name, bool crashOnError) {
+    int fd = open(name, O_RDONLY, 0);
 
+    ASSERT(!crashOnError || fd >= 0);
+    return fd;
+}
 //----------------------------------------------------------------------
 // OpenForReadWrite
 // 	Open a file for reading or writing.

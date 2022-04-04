@@ -233,7 +233,20 @@ void ExceptionHandler(ExceptionType which)
 			return;
 			ASSERTNOTREACHED();
 			break;
+		case SC_Open:
+			address = (int)kernel->machine->ReadRegister(4); 
+			type = (int)kernel->machine->ReadRegister(5);
+			str = NULL;
 
+			User2Sys(address,&length,str);
+			kernel->machine->WriteRegister(2, SysOpen(str, type));
+			if (str != NULL)
+				delete[] str;
+			PCIncrement();
+			return;
+
+			ASSERTNOTREACHED();
+			break;
 		default:
 			cerr << "Unexpected system call " << type << "\n";
 			break;

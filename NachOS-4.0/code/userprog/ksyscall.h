@@ -18,6 +18,19 @@
 // For numIO
 char inputNumBuffer[13];
 
+
+
+
+int SysOpen(char* fileName, int type) {
+    if (type != 0 && type != 1) return -1;
+
+    int id = kernel->fileSystem->Open(fileName, type);
+    if (id == -1) return -1;
+    DEBUG(dbgSys, "\nOpened file");
+    return id;
+}
+
+
 void SysPrintNum(int num)
 {
 
