@@ -233,7 +233,27 @@ void ExceptionHandler(ExceptionType which)
 			return;
 			ASSERTNOTREACHED();
 			break;
+		case SC_CreateFile:
+			DEBUG(dbgSys, "Create File.\n");
+			address = (int)kernel->machine->ReadRegister(4);
+			str = NULL;
+
+    		User2Sys(address,&length,str);
+
+			if (SysCreateFile(str))
+				kernel->machine->WriteRegister(2, 0);
+			else
+				kernel->machine->WriteRegister(2, -1);
+
+			if (str != NULL)
+				delete[] str;
+			PCIncrement();
+			return;
+
+			ASSERTNOTREACHED();
+			break;
 		case SC_Open:
+			DEBUG(dbgSys, "Open File.\n");
 			address = (int)kernel->machine->ReadRegister(4); 
 			type = (int)kernel->machine->ReadRegister(5);
 			str = NULL;
@@ -248,6 +268,7 @@ void ExceptionHandler(ExceptionType which)
 			ASSERTNOTREACHED();
 			break;
 		case SC_Close:
+			DEBUG(dbgSys, "Close File.\n");
 			result = (int)kernel->machine->ReadRegister(4);
     		kernel->machine->WriteRegister(2, SysClose(result));
 			PCIncrement();

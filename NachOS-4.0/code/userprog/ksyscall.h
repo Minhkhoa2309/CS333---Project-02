@@ -19,16 +19,35 @@
 char inputNumBuffer[13];
 
 
+bool SysCreateFile(char* fileName) {
+    bool success;
+    int length = strlen(fileName);
+     //File name can't be empty
+    if (length == 0) {
+        success = false;
+    }        //Not enough memory in system
+    else if (fileName == NULL) {
+        success = false;
+    }        //File's name read successfully 
+    else {
+              //Error creating file
+        if (!kernel->fileSystem->Create(fileName)) {
+            success = false;
+        } else {
+            success = true;
+        }
+    }
+    return success;
+}
 
 
 int SysOpen(char* fileName, int type) {
     if (type != 0 && type != 1) return -1;
 
     int id = kernel->fileSystem->Open(fileName, type);
-    if (id == -1) return -1;
-    DEBUG(dbgSys, "\nOpened file");
     return id;
 }
+
 int SysClose(int id) { 
   return kernel->fileSystem->Close(id); 
 }
