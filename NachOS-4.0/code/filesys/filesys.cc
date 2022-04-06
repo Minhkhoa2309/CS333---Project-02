@@ -337,15 +337,6 @@ FileSystem::Print()
     delete directory;
 } 
 #else  // FILESYS_STUB
-#include "copyright.h"
-#include "sysdep.h"
-#include "openfile.h"
-#include "filetable.h"
-#include "filesys.h"
-#include "kernel.h"
-#include "main.h"
 
-int FileSystem::FileTableIndex() { 
-    return kernel->currentThread->processID; 
-};
+
 #endif // FILESYS_STUB
