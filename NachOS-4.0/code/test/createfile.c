@@ -13,4 +13,5 @@ int main() {
         PrintString("Created successfully!\n");
     } else
         PrintString("Create file failed\n");
+    Halt();
 }
