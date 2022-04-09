@@ -96,8 +96,11 @@ void ExceptionHandler(ExceptionType which)
 	int address;
 	int length;
 	char *str;
+	char *buffer;
 	char charResult;
 	int result;
+	int fileid;
+	int position;
 
 	DEBUG(dbgSys, "Received Exception " << which << " type: " << type << "\n");
 
@@ -134,10 +137,10 @@ void ExceptionHandler(ExceptionType which)
 			break;
 
 		case SC_PrintNum:
-			DEBUG(dbgSys, "Print a integer number.\n");
+			// DEBUG(dbgSys, "Print a integer number.\n");
 
 			result = kernel->machine->ReadRegister(4);
-			DEBUG(dbgSys, "Number " << result << "\n");
+			// DEBUG(dbgSys, "Number " << result << "\n");
 			SysPrintNum(result);
 			PCIncrement();
 			return;
@@ -186,7 +189,7 @@ void ExceptionHandler(ExceptionType which)
 			ASSERTNOTREACHED();
 			break;
 		case SC_ReadString:
-			DEBUG(dbgSys, "Reading input at " << kernel->machine->ReadRegister(4) << " with a length of " << kernel->machine->ReadRegister(5) << "\n");
+			// DEBUG(dbgSys, "Reading string at " << kernel->machine->ReadRegister(4) << " with a length of " << kernel->machine->ReadRegister(5) << "\n");
 
 			/* Process Systemcall*/
 			address = (int)kernel->machine->ReadRegister(4);
@@ -195,9 +198,8 @@ void ExceptionHandler(ExceptionType which)
 
 			SysReadString(str, length);
 
-			DEBUG(dbgSys, "Writing from kernel space to user space\n");
-
 			Sys2User(address, length, str);
+			// DEBUG(dbgSys, "Written from kernel space to user space\n");
 
 			if (str != NULL)
 				delete[] str;
@@ -209,15 +211,15 @@ void ExceptionHandler(ExceptionType which)
 			break;
 
 		case SC_PrintString:
-			DEBUG(dbgSys, "Printing string at " << kernel->machine->ReadRegister(4) << "\n");
+			// DEBUG(dbgSys, "Printing string at " << kernel->machine->ReadRegister(4) << "\n");
 
 			/* Process Systemcall*/
 			address = (int)kernel->machine->ReadRegister(4);
 			str = NULL;
 
-			DEBUG(dbgSys, "Writing from user space to kernel space\n");
 			User2Sys(address, &length, str);
-			DEBUG(dbgSys, "Printing\n");
+			// DEBUG(dbgSys, "Written from user space to kernel space\n");
+			
 			SysPrintString(str, length);
 			if (str != NULL)
 				delete[] str;
@@ -233,14 +235,14 @@ void ExceptionHandler(ExceptionType which)
 			return;
 			ASSERTNOTREACHED();
 			break;
-		case SC_CreateFile:
+		case SC_Create:
 			DEBUG(dbgSys, "Create File.\n");
 			address = (int)kernel->machine->ReadRegister(4);
 			str = NULL;
 
     		User2Sys(address,&length,str);
 
-			if (SysCreateFile(str))
+			if (SysCreate(str))
 				kernel->machine->WriteRegister(2, 0);
 			else
 				kernel->machine->WriteRegister(2, -1);
@@ -255,11 +257,14 @@ void ExceptionHandler(ExceptionType which)
 		case SC_Open:
 			DEBUG(dbgSys, "Open File.\n");
 			address = (int)kernel->machine->ReadRegister(4); 
-			type = (int)kernel->machine->ReadRegister(5);
 			str = NULL;
 
 			User2Sys(address,&length,str);
-			kernel->machine->WriteRegister(2, SysOpen(str, type));
+			DEBUG(dbgSys, "Written from user space to kernel space\n");
+
+			result = SysOpen(str);
+			kernel->machine->WriteRegister(2, result);
+
 			if (str != NULL)
 				delete[] str;
 			PCIncrement();
@@ -269,8 +274,92 @@ void ExceptionHandler(ExceptionType which)
 			break;
 		case SC_Close:
 			DEBUG(dbgSys, "Close File.\n");
-			result = (int)kernel->machine->ReadRegister(4);
-    		kernel->machine->WriteRegister(2, SysClose(result));
+			fileid = (int)kernel->machine->ReadRegister(4);
+
+			result = SysClose(fileid);
+    		kernel->machine->WriteRegister(2, result);
+
+			PCIncrement();
+			return;
+
+			ASSERTNOTREACHED();
+			break;
+
+		case SC_Read: 
+			DEBUG(dbgSys, "Read File.\n");
+			address = (int)kernel->machine->ReadRegister(4);
+    		length = (int)kernel->machine->ReadRegister(5);
+			fileid = (int)kernel->machine->ReadRegister(6);
+			str = NULL;
+
+    		User2Sys(address, &length, str);
+			DEBUG(dbgSys, "Written from user space to kernel space\n");
+    		
+			result = SysRead(buffer, length, fileid);
+    		kernel->machine->WriteRegister(2, result);
+
+    		Sys2User(address, length, str);
+			DEBUG(dbgSys, "Written from kernel space to user space\n");
+
+			if (str != NULL)
+				delete[] str;
+
+			PCIncrement();
+			return;
+
+			ASSERTNOTREACHED();
+			break;
+		
+		case SC_Write:
+			DEBUG(dbgSys, "Write File.\n");
+			address = (int)kernel->machine->ReadRegister(4);
+    		length = (int)kernel->machine->ReadRegister(5);
+			fileid = (int)kernel->machine->ReadRegister(6);
+			str = NULL;
+
+    		User2Sys(address, &length, str);
+			DEBUG(dbgSys, "Written from user space to kernel space\n");
+    		
+			result = SysWrite(buffer, length, fileid);
+    		kernel->machine->WriteRegister(2, result);
+
+    		Sys2User(address, length, str);
+			DEBUG(dbgSys, "Written from kernel space to user space\n");
+
+			if (str != NULL)
+				delete[] str;
+
+			PCIncrement();
+			return;
+
+			ASSERTNOTREACHED();
+			break;
+
+		case SC_Seek:
+			position = (int)kernel->machine->ReadRegister(4);
+    		fileid = (int)kernel->machine->ReadRegister(5);
+
+    		kernel->machine->WriteRegister(2, SysSeek(position, fileid));
+
+    		PCIncrement();
+			return;
+
+			ASSERTNOTREACHED();
+			break;
+		case SC_Remove:
+			DEBUG(dbgSys, "Create File.\n");
+			address = (int)kernel->machine->ReadRegister(4);
+			str = NULL;
+
+    		User2Sys(address,&length,str);
+
+			if (SysRemove(str))
+				kernel->machine->WriteRegister(2, 0);
+			else
+				kernel->machine->WriteRegister(2, -1);
+
+			if (str != NULL)
+				delete[] str;
 			PCIncrement();
 			return;
 

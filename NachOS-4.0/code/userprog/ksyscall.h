@@ -18,8 +18,7 @@
 // For numIO
 char inputNumBuffer[13];
 
-
-bool SysCreateFile(char* fileName) {
+bool SysCreate(char* fileName) {
     bool success;
     int length = strlen(fileName);
      //File name can't be empty
@@ -41,15 +40,42 @@ bool SysCreateFile(char* fileName) {
 }
 
 
-int SysOpen(char* fileName, int type) {
-    if (type != 0 && type != 1) return -1;
-
-    int id = kernel->fileSystem->Open(fileName, type);
+int SysOpen(char* fileName) {
+    int id = kernel->fileSystem->OpenF(fileName);
     return id;
 }
 
 int SysClose(int id) { 
   return kernel->fileSystem->Close(id); 
+}
+
+int SysRead(char* buffer, int size, int id) {
+    // OpenFile *openFile;    
+    // char *buffer = new char[ContentSize];
+    // int i, numBytes;
+
+    // if ((openFile = fileSystem->Open(FileName)) == NULL) {
+	  //   printf("Perf test: unable to open file %s\n", FileName);
+	  //   delete [] buffer;
+	  //   return -1;
+    // }
+    // for (i = 0; i < FileSize; i += ContentSize) {
+    //   numBytes = openFile->Read(buffer, ContentSize);
+	  //   if ((numBytes < 10) || strncmp(buffer, Contents, ContentSize)) {
+	  //     delete openFile;
+	  //     delete [] buffer;
+	  //     return -1;
+	  //   }
+    // }
+    // delete [] buffer;
+    // delete openFile;	// close file
+
+    // return numBytes;
+    return 0;
+}
+
+int SysWrite(char* buffer, int size, int id) {
+    return kernel->fileSystem->Write(buffer, size, id);
 }
 
 void SysPrintNum(int num)
@@ -268,6 +294,35 @@ int SysReadNum()
     DEBUG(dbgSys, "Expected int32 number but " << inputNumBuffer << " found");
 
   return 0;
+}
+
+int SysSeek(int position, int id) {
+    if (id <= 1) {
+        DEBUG(dbgSys, "\nCan not seek file");
+        return -1;
+    }
+    return kernel->fileSystem->Seek(position, id);
+}
+
+bool SysRemove(char* fileName){
+      bool success;
+    int length = strlen(fileName);
+     //File name can't be empty
+    if (length == 0) {
+        success = false;
+    }        //Not enough memory in system
+    else if (fileName == NULL) {
+        success = false;
+    }        //File's name read successfully 
+    else {
+              //Error creating file
+        if (!kernel->fileSystem->Remove(fileName)) {
+            success = false;
+        } else {
+            success = true;
+        }
+    }
+    return success;
 }
 
 #endif /* ! __USERPROG_KSYSCALL_H__ */

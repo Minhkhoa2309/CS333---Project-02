@@ -78,18 +78,24 @@ class FileSystem {
         }
     }
 
-    int Open(char *name, int openMode) {
-        return fileTable[FileTableIndex()]->Insert(name, openMode);
+    int OpenF(char *name) {
+        return fileTable[FileTableIndex()]->Insert(name);
     }
 
     int Close(int id) { return fileTable[FileTableIndex()]->Remove(id); }
 
-    int Read(char *buffer, int charCount, int id) {
-        return fileTable[FileTableIndex()]->Read(buffer, charCount, id);
+    int Read(char *buffer, int size, int id) {
+        if (id == -1) {
+            return -1;
+        }
+        return fileTable[FileTableIndex()]->Read(buffer, size, id);
     }
 
-    int Write(char *buffer, int charCount, int id) {
-        return fileTable[FileTableIndex()]->Write(buffer, charCount, id);
+    int Write(char *buffer, int size, int id) {
+        if (id == -1) {
+            return -1;
+        }
+        return fileTable[FileTableIndex()]->Write(buffer, size, id);
     }
 
     int Seek(int position, int id) {

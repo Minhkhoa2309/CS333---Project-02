@@ -35,11 +35,11 @@ class OpenFile {
     ~OpenFile() { Close(file); }			// close the file
 
     int ReadAt(char *into, int numBytes, int position) { 
-    		Lseek(file, position, 0); 
+    	Lseek(file, position, 0); 
 		return ReadPartial(file, into, numBytes); 
 		}	
     int WriteAt(char *from, int numBytes, int position) { 
-    		Lseek(file, position, 0); 
+    	Lseek(file, position, 0); 
 		WriteFile(file, from, numBytes); 
 		return numBytes;
 		}	
@@ -74,7 +74,7 @@ class OpenFile {
   public:
     OpenFile(int sector);		// Open a file whose header is located
 					// at "sector" on the disk
-    ~OpenFile();			// Close the file
+    ~OpenFile(Close(file););			// Close the file
 
     void Seek(int position); 		// Set the position from which to 
 					// start reading/writing -- UNIX lseek

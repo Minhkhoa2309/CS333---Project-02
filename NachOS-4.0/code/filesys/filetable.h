@@ -4,26 +4,27 @@
 #include "sysdep.h"
 
 
-#define CONSOLE_IN 0
-#define CONSOLE_OUT 1
-#define MODE_READWRITE 0
-#define MODE_READ 1
-#define MODE_WRITE 2
+/*
+
+User program may require processing with mutiple files
+In order to achieve such behavior we need a file table
+which can store multiple files for processing
+
+*/
 
 class FileTable {
    private:
     OpenFile** openFile;
-    int* fileOpenMode;
 
    public:
     FileTable() {
         openFile = new OpenFile*[10]; //  Max file : 10
-        fileOpenMode = new int[10]; //  Max file : 10
-        fileOpenMode[CONSOLE_IN] = MODE_READ;
-        fileOpenMode[CONSOLE_OUT] = MODE_WRITE;
+        // fileOpenMode = new int[10]; //  Max file : 10
+        // fileOpenMode[0] = 1;
+        // fileOpenMode[1] = 2;
     }
 
-    int Insert(char* fileName, int openMode) {
+    int Insert(char* fileName) {
         int freeIndex = -1;
         int fileDescriptor = -1;
         for (int i = 2; i < 10; i++) {
@@ -32,20 +33,13 @@ class FileTable {
                 break;
             }
         }
-
         if (freeIndex == -1) {
             return -1;
         }
-
-        if (openMode == MODE_READWRITE)
-            fileDescriptor = OpenForReadWrite(fileName, FALSE);
-        if (openMode == MODE_READ)
-            fileDescriptor = OpenForRead(fileName, FALSE);
-
+        fileDescriptor = OpenForReadWrite(fileName, FALSE);
         if (fileDescriptor == -1) return -1;
         openFile[freeIndex] = new OpenFile(fileDescriptor);
-        fileOpenMode[freeIndex] = openMode;
-
+        // fileOpenMode[freeIndex] = 0;
         return freeIndex;
     }
 
@@ -59,20 +53,20 @@ class FileTable {
         return -1;
     }
 
-    int Read(char* buffer, int charCount, int index) {
+    int Read(char* buffer, int size, int index) {
         if (index >= 10) return -1;
         if (openFile[index] == NULL) return -1;
-        int result = openFile[index]->Read(buffer, charCount);
+        int result = openFile[index]->Read(buffer, size);
         // if we cannot read enough bytes, we should return -2
-        if (result != charCount) return -2;
+        if (result != size) return -2;
         return result;
     }
 
-    int Write(char* buffer, int charCount, int index) {
+    int Write(char* buffer, int size, int index) {
         if (index >= 10) return -1;
-        if (openFile[index] == NULL || fileOpenMode[index] == MODE_READ)
+        if (openFile[index] == NULL)
             return -1;
-        return openFile[index]->Write(buffer, charCount);
+        return openFile[index]->Write(buffer, size);
     }
 
     int Seek(int pos, int index) {
@@ -89,7 +83,7 @@ class FileTable {
             if (openFile[i]) delete openFile[i];
         }
         delete[] openFile;
-        delete[] fileOpenMode;
+        // delete[] fileOpenMode;
     }
 };
 

@@ -44,7 +44,6 @@
 #define SC_ReadChar 48
 #define SC_PrintChar 49
 #define SC_PrintASCII 50
-#define SC_CreateFile 51
 
 #ifndef IN_ASM
 
@@ -143,14 +142,13 @@ typedef int OpenFileId;
 /* Return 1 on success, negative error code on failure */
 int Create(char *name);
 
-int CreateFile(char *name);
 /* Remove a Nachos file, with name "name" */
 int Remove(char *name);
 
 /* Open the Nachos file "name", and return an "OpenFileId" that can
  * be used to read and write to the file.
  */
-OpenFileId Open(char *name,int type);
+OpenFileId Open(char *name);
 
 /* Write "size" bytes from "buffer" to the open file.
  * Return the number of bytes actually read on success.
