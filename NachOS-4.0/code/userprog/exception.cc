@@ -101,6 +101,7 @@ void ExceptionHandler(ExceptionType which)
 	int result;
 	int fileid;
 	int position;
+	int l;
 
 	DEBUG(dbgSys, "Received Exception " << which << " type: " << type << "\n");
 
@@ -292,15 +293,17 @@ void ExceptionHandler(ExceptionType which)
 			fileid = (int)kernel->machine->ReadRegister(6);
 			str = NULL;
 
-    		User2Sys(address, &length, str);
+    		User2Sys(address, &l, str);
 			DEBUG(dbgSys, "Written from user space to kernel space\n");
     		
-			result = SysRead(buffer, length, fileid);
-    		kernel->machine->WriteRegister(2, result);
+			result = SysRead(str, length, fileid);
 
-    		Sys2User(address, length, str);
+			Sys2User(address, 100, str);
 			DEBUG(dbgSys, "Written from kernel space to user space\n");
 
+    		kernel->machine->WriteRegister(2, result);
+
+			
 			if (str != NULL)
 				delete[] str;
 
@@ -317,13 +320,20 @@ void ExceptionHandler(ExceptionType which)
 			fileid = (int)kernel->machine->ReadRegister(6);
 			str = NULL;
 
-    		User2Sys(address, &length, str);
+    		User2Sys(address, &l, str);
+
+			l -= 1;
+
 			DEBUG(dbgSys, "Written from user space to kernel space\n");
-    		
-			result = SysWrite(buffer, length, fileid);
+
+			DEBUG(dbgSys, "Writting string " << str << " to file\n");
+
+			DEBUG(dbgSys, "Writting with length " << l << " to file\n");
+
+			result = SysWrite(str, l, fileid);
     		kernel->machine->WriteRegister(2, result);
 
-    		Sys2User(address, length, str);
+    		Sys2User(address, l, str);
 			DEBUG(dbgSys, "Written from kernel space to user space\n");
 
 			if (str != NULL)

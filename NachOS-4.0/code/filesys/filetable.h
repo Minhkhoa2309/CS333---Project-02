@@ -22,6 +22,7 @@ class FileTable {
         // fileOpenMode = new int[10]; //  Max file : 10
         // fileOpenMode[0] = 1;
         // fileOpenMode[1] = 2;
+        
     }
 
     int Insert(char* fileName) {

@@ -50,28 +50,13 @@ int SysClose(int id) {
 }
 
 int SysRead(char* buffer, int size, int id) {
-    // OpenFile *openFile;    
-    // char *buffer = new char[ContentSize];
-    // int i, numBytes;
+  DEBUG(dbgSys, "File id: " << id << "\n");
+  int result = kernel->fileSystem->Read(buffer, size, id);
+  DEBUG(dbgSys, "Read return: " << result << "\n");
 
-    // if ((openFile = fileSystem->Open(FileName)) == NULL) {
-	  //   printf("Perf test: unable to open file %s\n", FileName);
-	  //   delete [] buffer;
-	  //   return -1;
-    // }
-    // for (i = 0; i < FileSize; i += ContentSize) {
-    //   numBytes = openFile->Read(buffer, ContentSize);
-	  //   if ((numBytes < 10) || strncmp(buffer, Contents, ContentSize)) {
-	  //     delete openFile;
-	  //     delete [] buffer;
-	  //     return -1;
-	  //   }
-    // }
-    // delete [] buffer;
-    // delete openFile;	// close file
+  DEBUG(dbgSys, "Buffer return: " << buffer << "\n");
 
-    // return numBytes;
-    return 0;
+  return result;
 }
 
 int SysWrite(char* buffer, int size, int id) {

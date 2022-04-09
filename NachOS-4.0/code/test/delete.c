@@ -8,12 +8,11 @@ int main() {
     PrintString("Enter file name: ");
     ReadString(fileName, length);
 
-    if (Remove(fileName) != 1){
+    if (Remove(fileName) != 1) {
         PrintString("Remove successfully\n");
     }
-    else{
+    else {
         PrintString("Remove unsuccessfully\n");
-
     }
-        Halt();
+    Halt();
 }
