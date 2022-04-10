@@ -24,7 +24,8 @@ bool SysCreate(char* fileName) {
      //File name can't be empty
     if (length == 0) {
         success = false;
-    }        //Not enough memory in system
+    }        
+    //Not enough memory in system
     else if (fileName == NULL) {
         success = false;
     }        //File's name read successfully 
