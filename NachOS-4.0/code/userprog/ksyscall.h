@@ -211,7 +211,7 @@ void TilBlank()
   if (isBlank(c))
   {
     DEBUG(dbgSys, "Unexpected white-space - number expected");
-    return;
+    c = kernel->synchConsoleIn->GetChar();
   }
 
   int n = 0;

@@ -2,16 +2,17 @@
 
 int main() {
     char *fileName;
-    char buffer[256];
+    int filelength;
     int length;
     int fileid;
+    int len;
     int closefile;
     int lengthRead;
     
     fileid = -1;
     closefile = -1;
     lengthRead = 0;
-    buffer[255] = '\0';
+    
 
     PrintString("Enter file name's length: ");
     length = ReadNum();
@@ -20,31 +21,35 @@ int main() {
 
 
     fileid = Open(fileName);
+    filelength = Seek(-1, fileid);
     if (fileid != -1) {
-        PrintString(fileName);
-        PrintString(" opened successfully!\n");
+
+        Seek(0, fileid);
         
-        lengthRead = Read(buffer, 255, fileid);
-        
-
-        PrintString("Buffer read: ");
-        PrintString(buffer);
-        PrintString("\n");
-
-        
+        while (filelength > 0) {
+            // Maximun buffer for a read is 512 characters
+            char buffer[512];
+            buffer[511] = '\0';
+            len = 0;
+            if (filelength > 511) {
+                Read(buffer, 511, fileid);
+                filelength = filelength - 511;
+                Seek(511, fileid);
+            } else {
+                lengthRead = Read(buffer, filelength, fileid);
+                while (len <= filelength) {
+                    len++;
+                }
+                buffer[len] = '\0';
+                filelength = filelength - filelength;
+            }
+            PrintString("Buffer read: ");
+            PrintString(buffer);
+            PrintString("\n");
+        }
     }
 
-    if (fileid != -1) {
-        closefile = Close(fileid);
-    }
+    closefile = Close(fileid);
 
-    if (closefile != -1) {
-        PrintString(fileName);
-        PrintString(" closed successfully!\n");
-    }
-
-    if (fileid == -1 || closefile == -1 || lengthRead == -1) {
-        PrintString("Program failed somewhere!\n");
-    }
     Halt();
 }

@@ -289,17 +289,17 @@ void ExceptionHandler(ExceptionType which)
 		case SC_Read: 
 			DEBUG(dbgSys, "Read File.\n");
 			address = (int)kernel->machine->ReadRegister(4);
-    		length = (int)kernel->machine->ReadRegister(5);
+    	length = (int)kernel->machine->ReadRegister(5);
 			fileid = (int)kernel->machine->ReadRegister(6);
 			str = NULL;
 
-    		User2Sys(address, &l, str);
-			DEBUG(dbgSys, "Written from user space to kernel space\n");
+    	User2Sys(address, &l, str);
+			// DEBUG(dbgSys, "Written from user space to kernel space\n");
     		
 			result = SysRead(str, length, fileid);
 
-			Sys2User(address, 100, str);
-			DEBUG(dbgSys, "Written from kernel space to user space\n");
+			Sys2User(address, length, str);
+			// DEBUG(dbgSys, "Written from kernel space to user space\n");
 
     		kernel->machine->WriteRegister(2, result);
 
@@ -316,25 +316,25 @@ void ExceptionHandler(ExceptionType which)
 		case SC_Write:
 			DEBUG(dbgSys, "Write File.\n");
 			address = (int)kernel->machine->ReadRegister(4);
-    		length = (int)kernel->machine->ReadRegister(5);
+    	length = (int)kernel->machine->ReadRegister(5);
 			fileid = (int)kernel->machine->ReadRegister(6);
 			str = NULL;
 
-    		User2Sys(address, &l, str);
+    	User2Sys(address, &l, str);
 
 			l -= 1;
 
-			DEBUG(dbgSys, "Written from user space to kernel space\n");
+			// DEBUG(dbgSys, "Written from user space to kernel space\n");
 
 			DEBUG(dbgSys, "Writting string " << str << " to file\n");
 
 			DEBUG(dbgSys, "Writting with length " << l << " to file\n");
 
 			result = SysWrite(str, l, fileid);
-    		kernel->machine->WriteRegister(2, result);
+    	kernel->machine->WriteRegister(2, result);
 
-    		Sys2User(address, l, str);
-			DEBUG(dbgSys, "Written from kernel space to user space\n");
+    	Sys2User(address, l, str);
+			// DEBUG(dbgSys, "Written from kernel space to user space\n");
 
 			if (str != NULL)
 				delete[] str;
