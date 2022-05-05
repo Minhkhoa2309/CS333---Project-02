@@ -51,6 +51,10 @@ class FileSystem {
         for (int i = 0; i < 10; i++) {
             fileTable[i] = new FileTable;
         }
+        this->Create("STDIN");
+		this->Create("STDOUT");
+		this->OpenF("STDIN");
+		this->OpenF("STDOUT");
     }
 
     ~FileSystem() {

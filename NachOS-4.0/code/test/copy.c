@@ -66,11 +66,13 @@ int main() {
                 length2 = length2 - length2;
             }
         }
-
+        closefile = Close(fileid1);
+        closefile = Close(fileid2);
+    } else {
+        PrintString("Can't open file.\n");
     }
 
-    closefile = Close(fileid1);
-    closefile = Close(fileid2);
+    
 
     Halt();
 }

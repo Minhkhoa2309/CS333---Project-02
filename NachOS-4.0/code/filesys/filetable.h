@@ -19,16 +19,13 @@ class FileTable {
    public:
     FileTable() {
         openFile = new OpenFile*[10]; //  Max file : 10
-        // fileOpenMode = new int[10]; //  Max file : 10
-        // fileOpenMode[0] = 1;
-        // fileOpenMode[1] = 2;
         
     }
 
     int Insert(char* fileName) {
         int freeIndex = -1;
         int fileDescriptor = -1;
-        for (int i = 2; i < 10; i++) {
+        for (int i = 0; i < 10; i++) {
             if (openFile[i] == NULL) {
                 freeIndex = i;
                 break;
@@ -40,7 +37,6 @@ class FileTable {
         fileDescriptor = OpenForReadWrite(fileName, FALSE);
         if (fileDescriptor == -1) return -1;
         openFile[freeIndex] = new OpenFile(fileDescriptor);
-        // fileOpenMode[freeIndex] = 0;
         return freeIndex;
     }
 

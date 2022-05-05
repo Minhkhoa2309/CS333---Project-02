@@ -20,6 +20,12 @@ int main() {
     
 
     fileid1 = Open(fileName1);
+
+    if (fileid1 == -1) {
+        PrintString("Can't find file.\n");
+        Halt();
+    }
+
     length1 = Seek(-1, fileid1);
     
     PrintString("Enter file 2 name's length: ");
@@ -28,14 +34,22 @@ int main() {
     ReadString(fileName2, length);
 
     fileid2 = Open(fileName2);
+
+    if (fileid2 == -1) {
+        PrintString("Can't find file.\n");
+        Halt();
+    }
+
     length2 = Seek(-1, fileid2);
 
     if (fileid1 != -1 && fileid2 != -1) {
         Seek(0, fileid1);
         Seek(0, fileid2);
 
-        if (Create("Concatenate-result.txt") != 0) 
+        if (Create("Concatenate-result.txt") != 0) {
             PrintString("Create concatenate file failed!\n");
+            Halt();
+        }
 
         fileid3 = Open("Concatenate-result.txt");
 

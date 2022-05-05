@@ -47,9 +47,12 @@ int main() {
             PrintString(buffer);
             PrintString("\n");
         }
+        closefile = Close(fileid);
+    } else {
+        PrintString("Can't find file.\n");
     }
 
-    closefile = Close(fileid);
+    
 
     Halt();
 }
